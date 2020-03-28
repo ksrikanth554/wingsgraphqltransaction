@@ -11,4 +11,4 @@ class GraphQlConfiguration{
     return GraphQLClient(link: httpLink, cache: OptimisticCache(dataIdFromObject: typenameDataIdFromObject));
   }
 
-}
+} 

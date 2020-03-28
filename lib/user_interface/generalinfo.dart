@@ -1,22 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:intl/intl.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:toast/toast.dart';
-import 'package:wingsgraphqltransaction/graphql_config.dart';
-import 'package:wingsgraphqltransaction/queries/geninfo_data_query.dart';
-import 'package:wingsgraphqltransaction/queries/geninfo_ui_query.dart';
+import '../graphql_config.dart';
+import '../queries/geninfo_data_query.dart';
+import '../queries/geninfo_ui_query.dart';
+import '../user_interface/combo_box.dart';
 
 class GeneralInformation extends StatefulWidget {
+ static TextEditingController txtvoucherController=TextEditingController();
+ static TextEditingController txtDateController=TextEditingController();
+ static TextEditingController txtBranchController=TextEditingController();
+ static TextEditingController txtLocationController=TextEditingController();
   @override
   _GeneralInformationState createState() => _GeneralInformationState();
 }
 
 class _GeneralInformationState extends State<GeneralInformation> {
 
-  TextEditingController txtvoucherController=TextEditingController();
-  TextEditingController txtDateController=TextEditingController();
-  TextEditingController txtBranchController=TextEditingController();
-  TextEditingController txtLocationController=TextEditingController();
+
 
   GraphQlConfiguration graphQlConfiguration=GraphQlConfiguration();
   List<String> listUI=List<String>();
@@ -25,6 +28,7 @@ class _GeneralInformationState extends State<GeneralInformation> {
     // TODO: implement initState
     fillList();
     super.initState();
+    GeneralInformation.txtDateController.text= DateFormat('dd-MM-yyyy').format(DateTime.now());
      
   }
   void fillList() async{
@@ -45,33 +49,66 @@ class _GeneralInformationState extends State<GeneralInformation> {
     });
 
   }
+  onTapValue(String lstring,Object res){
+    if(lstring=='Branch'){
+      GeneralInformation.txtBranchController.text=res!=null?res.toString():'';
+    }
+    if(lstring=='VoucherType'){
+     GeneralInformation.txtvoucherController.text=res!=null?res.toString():'';
+    }
+    if(lstring=='Location'){
+      GeneralInformation.txtLocationController.text=res!=null?res.toString():'';
+    }
+    
+    
+  }
 
   Widget listBuilder(String lstring,int index){
     
-    Widget wid=Container(
+    Widget wid= Container(
                   child: TextField(
+                    readOnly: true,
                     controller: textEditController(lstring),
                     decoration: InputDecoration(
                       labelText:lstring,
                     ), 
+                    onTap: ()async{
+                      if(lstring=='Date'){
+                        showDatePicker(
+                          context: context, 
+                          initialDate: DateTime.now(),
+                          firstDate: DateTime(2020), 
+                          lastDate: DateTime(2025)).then((retVal){
+                           GeneralInformation.txtDateController.text=DateFormat('dd-MM-yyyy').format(retVal);
+                          });
+                      }
+                      else{
+
+                     final res =await Navigator.of(context).pushNamed(ComboBox.routeName,arguments: lstring);
+                     onTapValue(lstring,res);
+                      }
+                    },
                    
                   ),
+                  
                 );
+               
+              
     return wid;
   }
   TextEditingController textEditController(String str){
       if(str=='VoucherType'){
-        return txtvoucherController;
+        return GeneralInformation.txtvoucherController;
       }
       if(str=='Date'){
-        return txtDateController;
+        return GeneralInformation.txtDateController;
         
       }
       if(str=='Branch'){
-        return txtBranchController;
+        return GeneralInformation.txtBranchController;
       }
       if(str=='Location'){
-        return txtLocationController;
+        return GeneralInformation.txtLocationController;
       }
 
   }
@@ -94,51 +131,7 @@ class _GeneralInformationState extends State<GeneralInformation> {
 
             ),
           ),
-          FlatButton(
-             child: Text('Save'),
-             onPressed: ()async{
-                ProgressDialog progressDialog=ProgressDialog(context);
-                progressDialog.update(message: 'Saving...');
-                if(txtvoucherController.text.isNotEmpty && txtLocationController.text.isNotEmpty
-                   && txtBranchController.text.isNotEmpty && txtDateController.text.isNotEmpty){
-                   progressDialog.show();
-                     GeneralInfoData generalInfoData=GeneralInfoData();
-                     GraphQLClient _client=graphQlConfiguration.clientQuery();
-                     QueryResult result=await _client.mutate(
-                    MutationOptions(
-                    document: generalInfoData.addData(txtvoucherController.text, txtDateController.text,
-                                                       txtBranchController.text, txtLocationController.text),
-                  )
-                );
-
-                   
-                
-                if(!result.hasException){
-                  progressDialog.hide();
-                  txtLocationController.clear();
-                  txtDateController.clear();
-                  txtBranchController.clear();
-                  txtvoucherController.clear();
-                  setState(() {
-                    
-                  });    
-
-                }
-                if(result.hasException){ 
-                  progressDialog.hide();
-                  Toast.show('invalid data', context,duration:Toast.LENGTH_LONG);
-
-                }
-            }
-            else{
-             // Future.delayed(Duration(seconds: 3)).then((onValue)=>progressDialog.hide());
-              Toast.show('Please Enter All Fileds', context,duration: Toast.LENGTH_LONG);
-             // progressDialog.hide();
-            }
-
-
-             },
-             )
+         
         ],
       ),
       
