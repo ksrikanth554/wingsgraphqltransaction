@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:progress_dialog/progress_dialog.dart';
+import 'package:toast/toast.dart';
 import 'package:wingsgraphqltransaction/queries/add_items_queries.dart';
 import '../graphql_config.dart';
 
@@ -59,6 +60,7 @@ class _AddItemsAlertDialogState extends State<AddItemsAlertDialog> {
                          child: TextField(
                            controller: txtQuantity,
                            maxLength: 30,
+                           keyboardType:TextInputType.number,
                            decoration: InputDecoration(
                              labelText: 'Quantity'
                            ),
@@ -72,6 +74,7 @@ class _AddItemsAlertDialogState extends State<AddItemsAlertDialog> {
                          child: TextField(
                            controller: txtprice,
                            maxLength: 30,
+                           keyboardType: TextInputType.number,
                            decoration: InputDecoration(
                              labelText: 'Price'
                            ),
@@ -91,6 +94,9 @@ class _AddItemsAlertDialogState extends State<AddItemsAlertDialog> {
                 ),
                  FlatButton(child: Text('ok'),
                 onPressed: ()async{
+                  var quantity=int.parse(txtQuantity.text);
+                  var price=double.parse(txtprice.text);
+                  var totalPrice=quantity*price;
                   ProgressDialog progressDialog=ProgressDialog(context);
                   progressDialog.update(message: 'adding item..');
                   progressDialog.show();
@@ -99,9 +105,14 @@ class _AddItemsAlertDialogState extends State<AddItemsAlertDialog> {
                   QueryResult result= await _client.mutate(
                     MutationOptions(
                       document: addItemsQuery.addItemsInsertion(txtItemName.text, txtItemCode.text,
-                                                                int.parse(txtQuantity.text), double.parse(txtprice.text))
-                    )
+                                                                int.parse(txtQuantity.text), double.parse(txtprice.text),totalPrice
+                                                                )
+                    ),
+                    
                   );
+                  if(result.loading){
+                    return Text('loading');
+                  }
                   if(!result.hasException){
                     txtItemCode.clear();
                     txtItemName.clear();
@@ -109,6 +120,20 @@ class _AddItemsAlertDialogState extends State<AddItemsAlertDialog> {
                     txtprice.clear();
                     progressDialog.hide();
                     Navigator.pop(context);
+                  }
+                  
+                  else{
+                    Toast.show('Invalid', context,duration: Toast.LENGTH_LONG);
+                    showDialog(context: context,
+                    builder:(ctx)=>AlertDialog(
+                      title: Text('Error'),
+                      content: Text('Invalid Data'),
+                      actions: <Widget>[
+                        FlatButton(onPressed: ()=>Navigator.pop(context), child:Text('ok'))
+                      ],
+                    )
+                    );
+                    progressDialog.hide();
                   }
                 },
                 ),

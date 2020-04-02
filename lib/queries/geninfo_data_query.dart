@@ -14,4 +14,17 @@ class GeneralInfoData{
     """;
 
   }
+  String getData(){
+    return"""
+  query{
+      generalinformation{
+        transactionnumber
+        vouchertype
+        date
+        branch
+        location
+      }
+    }
+    """;
+  }
 }

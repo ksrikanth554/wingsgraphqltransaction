@@ -19,8 +19,9 @@ class GeneralInformation extends StatefulWidget {
 
 class _GeneralInformationState extends State<GeneralInformation> {
 
-
-
+  bool boolVoucher=false;
+  bool boolBranch=false;
+  bool boolLocation=false;
   GraphQlConfiguration graphQlConfiguration=GraphQlConfiguration();
   List<String> listUI=List<String>();
   @override
@@ -51,16 +52,50 @@ class _GeneralInformationState extends State<GeneralInformation> {
   }
   onTapValue(String lstring,Object res){
     if(lstring=='Branch'){
-      GeneralInformation.txtBranchController.text=res!=null?res.toString():'';
+      if (res!=null) {
+      boolBranch=false;
+      GeneralInformation.txtBranchController.text=res.toString();
+      }
+      else{
+        boolBranch=true;
+        GeneralInformation.txtBranchController.text='';      }
     }
     if(lstring=='VoucherType'){
-     GeneralInformation.txtvoucherController.text=res!=null?res.toString():'';
+      if (res!=null) {
+      boolVoucher=false;
+     GeneralInformation.txtvoucherController.text=res.toString();
+      }
+      else{
+        boolVoucher=true;
+        GeneralInformation.txtvoucherController.text='';
+      }
     }
     if(lstring=='Location'){
-      GeneralInformation.txtLocationController.text=res!=null?res.toString():'';
+      if (res!=null) {
+        boolLocation=false;
+      GeneralInformation.txtLocationController.text=res.toString();
+        
+      }
+      else{
+        boolLocation=true;
+        GeneralInformation.txtLocationController.text='';
+      }
     }
     
     
+  }
+  String errorText(String lString){
+    switch (lString) {
+      case 'VoucherType':return boolVoucher?'Please Select Voucher Type':null;
+      break;
+      case 'Branch':return boolBranch?'Please Select Branch':null;
+      break;
+      case 'Location':return boolLocation?'Please Select Location':null;
+      break;
+      default:return null;
+      
+      
+    }
   }
 
   Widget listBuilder(String lstring,int index){
@@ -69,8 +104,10 @@ class _GeneralInformationState extends State<GeneralInformation> {
                   child: TextField(
                     readOnly: true,
                     controller: textEditController(lstring),
+                    
                     decoration: InputDecoration(
                       labelText:lstring,
+                      errorText:errorText(lstring)
                     ), 
                     onTap: ()async{
                       if(lstring=='Date'){
@@ -85,6 +122,7 @@ class _GeneralInformationState extends State<GeneralInformation> {
                       else{
 
                      final res =await Navigator.of(context).pushNamed(ComboBox.routeName,arguments: lstring);
+                     
                      onTapValue(lstring,res);
                       }
                     },
@@ -122,14 +160,27 @@ class _GeneralInformationState extends State<GeneralInformation> {
         children: <Widget>[
           Expanded(
 
-               child: ListView.builder(
+               child: Card(
+                 elevation: 15,
+                                child: Container(
+
+                   decoration: BoxDecoration(
+                     border:Border.all(
+                       width: 1
+                     )
+                   ),
+                  // margin: EdgeInsets.all(MediaQuery.of(context).size.width*0.01),
+                   padding: EdgeInsets.all(MediaQuery.of(context).size.width*0.02),
+                   child: ListView.builder(
               itemCount: listUI.length,
               itemBuilder: (ctx,index){
-                String lstring=listUI[index];
-                return listBuilder(lstring,index);
+                    String lstring=listUI[index];
+                    return listBuilder(lstring,index);
               },
 
             ),
+                 ),
+               ),
           ),
          
         ],
