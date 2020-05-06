@@ -62,6 +62,13 @@ class _SingleRowPageState extends State<SingleRowPage> {
       key:SingleRowPage.formKey ,
        child: Scaffold(
         body: Container(
+          margin: EdgeInsets.all(MediaQuery.of(context).size.width*0.01),
+          padding: EdgeInsets.all((MediaQuery.of(context).size.width*0.01)),
+          decoration: BoxDecoration(
+            border: Border.all(
+              width: 1
+            )
+          ),
           child: ListView.builder(
             itemCount: singlerowMap[widget.tabName].length,
             itemBuilder: (ctx,index){
@@ -75,6 +82,7 @@ class _SingleRowPageState extends State<SingleRowPage> {
                 
               }
               return Container(
+                
                 child: singlerowMap[widget.tabName][index],
                 
               );
