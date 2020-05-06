@@ -8,6 +8,8 @@ import 'package:wingsgraphqltransaction/CommonComponets/components.dart';
 import 'package:wingsgraphqltransaction/UIControls/multirowpage.dart';
 import 'package:wingsgraphqltransaction/UIControls/singlerowpage.dart';
 import 'package:wingsgraphqltransaction/UIControls/transaction_controls.dart';
+import 'package:wingsgraphqltransaction/data/multirowData.dart';
+import 'package:wingsgraphqltransaction/data/singlerowcontrollerdata.dart';
 import '../queries/add_items_queries.dart';
 import '../queries/geninfo_data_query.dart';
 import '../graphql_config.dart';
@@ -17,12 +19,15 @@ import '../user_interface/generalinfo.dart';
 
 class TransactionPage extends StatefulWidget {
   Map transaction;
+  static int i=1;
   TransactionPage(this.transaction);
   @override
   _TransactionPageState createState() => _TransactionPageState(transaction);
 }
 
 class _TransactionPageState extends State<TransactionPage> {
+  
+  
   Map transactionMap;
   _TransactionPageState(this.transactionMap);
   int tabLength;
@@ -168,12 +173,40 @@ var _tabs=<Tab>[
         //       Toast.show('Please Enter All Fileds', context,duration: Toast.LENGTH_LONG);
         //      // progressDialog.hide();
         //     }
-                 if(SingleRowPage.formKey.currentState.validate()){
+                //  if(SingleRowPage.formKey.currentState.validate()){
 
-                 }
-                 else{
-                   SingleRowPage.autoValidate=true;
-                 }
+                //  }
+                //  else{
+                //    SingleRowPage.autoValidate=true;
+                //  }
+                
+                ProgressDialog progressDialog=ProgressDialog(context);
+                progressDialog.show().then((ret){
+                singleRowSaved[TransactionPage.i]=singleRowControllerData;
+                multiRowSaved[TransactionPage.i]=MultiRowPage.itemList;
+                progressDialog.update(message: 'Saving...');
+                Future.delayed(Duration(seconds: 3)).then((res){
+                    progressDialog.hide();
+                    
+                    setState(() {
+                    
+                    Toast.show('Saved successFully', context,duration: Toast.LENGTH_LONG);
+                    print(singleRowSaved[1]);
+                    singleRowControllerData.clear();
+                    for (var tableName in SingleRowPage.textEditControllersMap.keys) {
+                      Map<String,TextEditingController> tableControllers=SingleRowPage.textEditControllersMap[tableName];
+                      for (var key in tableControllers.keys) {
+                        tableControllers[key].clear();
+                      }
+                    }
+                    MultiRowPage.itemList.clear();
+                    });
+
+                });
+                
+                
+                });
+                
                 
               }
              ),
@@ -224,7 +257,7 @@ var _tabs=<Tab>[
           }
           if (isSingleRowMap[item.text]==true) {
             _tabBody.add(
-              SingleRowPage(singlerowPages[item.text],item.text)
+              SingleRowPage( singlerowPages[item.text],item.text)
             
           ); 
          }

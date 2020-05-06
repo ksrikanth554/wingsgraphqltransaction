@@ -8,6 +8,7 @@ import 'package:wingsgraphqltransaction/data/singlerowcontrollerdata.dart';
 class SingleRowPage extends StatefulWidget {
   static bool autoValidate=false;
   List<Map> listColumns=[];
+ static Map<String,Map<String,TextEditingController>> textEditControllersMap={};
   String tabName;
   static final formKey=GlobalKey<FormState>();
   SingleRowPage(this.listColumns,this.tabName);
@@ -20,7 +21,7 @@ class _SingleRowPageState extends State<SingleRowPage> {
   var dataType;
   var caption;
     Map<String,String> fieldMap={};
-    Map<String,Map<String,TextEditingController>> textEditControllersMap={};
+    
     Map<String,TextEditingController> textEditControllers={};
     List<Widget> singleRowControls=[];
     Map<String,List<Widget>> singlerowMap={};
@@ -49,7 +50,7 @@ class _SingleRowPageState extends State<SingleRowPage> {
           singleRowControls.add(getControl(dataType,caption, textController,context));
          
       }
-        textEditControllersMap[widget.tabName]=textEditControllers;
+       SingleRowPage.textEditControllersMap[widget.tabName]=textEditControllers;
         singlerowMap[widget.tabName]=singleRowControls;
        
             
