@@ -1,7 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:wingsgraphqltransaction/UIControls/additems_combo.dart';
+import 'package:wingsgraphqltransaction/UIControls/singlerow_combo.dart';
+
 import 'package:wingsgraphqltransaction/graphql_config.dart';
+import 'package:wingsgraphqltransaction/splashscree.dart';
 import 'package:wingsgraphqltransaction/user_interface/combo_box.dart';
 import './user_interface/transaction_page.dart';
 
@@ -15,6 +19,7 @@ void main(){
       child: CacheProvider(child: HomePage()),
     )
   );
+ // loadTransaction();
 }
 
 class HomePage extends StatelessWidget {
@@ -27,9 +32,11 @@ class HomePage extends StatelessWidget {
         primaryColor: Colors.blue,
         
       ),
-      home:TransactionPage(),
+      home:Splash(),
       routes: {
         ComboBox.routeName:(ctx)=>ComboBox(),
+        AddItemsCombo.routeName:(ctx)=>AddItemsCombo(),
+        SingleRowCombo.routeName:(ctx)=>SingleRowCombo(),
       },
       
       
